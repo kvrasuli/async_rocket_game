@@ -5,6 +5,7 @@ import random
 from fire_animation import fire
 from curses_tools import draw_frame, read_controls, get_frame_size
 from itertools import cycle
+from space_garbage import fly_garbage
 
 TIC_TIMEOUT = 0.1
 POINTS_PER_PRESS = 5
@@ -15,9 +16,11 @@ def draw(canvas):
   canvas.border()
   canvas.nodelay(True)
   with open('animation/rocket_frame_1.txt') as f:
-    frame_1 = f.read()
+    rocket_frame_1 = f.read()
   with open('animation/rocket_frame_2.txt') as f:
-    frame_2 = f.read()
+    rocket_frame_2 = f.read()
+  with open('animation/hubble.txt') as f:
+    garbage_frame = f.read()
   canvas_height, canvas_width = canvas.getmaxyx() # getmaxyx() returns size of the canvas!
   fire_coro = fire(canvas, canvas_height/2, canvas_width/2)
   spaceship_coro = animate_spaceship(
@@ -26,11 +29,11 @@ def draw(canvas):
     canvas_width/2 - 2,   # substrating 2 is to match the fire shot with the rocket at the first moment 
     canvas_height, 
     canvas_width, 
-    frame_1, 
-    frame_2
+    rocket_frame_1, 
+    rocket_frame_2
   ) 
-
-  coroutines = [fire_coro, spaceship_coro]
+  garbage_coro = fly_garbage(canvas, 10, garbage_frame)
+  coroutines = [fire_coro, spaceship_coro, garbage_coro]
  
   for _ in range(NUMBER_OF_STARS):
     star_symbol = random.choice("+*.:")
@@ -57,19 +60,19 @@ async def blink(canvas, row, column, blink_offset_tics, symbol='*'):
     
   while True:  
     canvas.addstr(row, column, symbol, curses.A_DIM)
-    for i in range(20):
+    for _ in range(20):
       await asyncio.sleep(0)
 
     canvas.addstr(row, column, symbol)
-    for i in range(3):
+    for _ in range(3):
       await asyncio.sleep(0)
 
     canvas.addstr(row, column, symbol, curses.A_BOLD)
-    for i in range(5):
+    for _ in range(5):
       await asyncio.sleep(0)
 
     canvas.addstr(row, column, symbol)
-    for i in range(3):
+    for _ in range(3):
       await asyncio.sleep(0)    
 
 
