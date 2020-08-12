@@ -9,6 +9,7 @@ from space_garbage import fly_garbage, obstacles
 from physics import update_speed
 from obstacles import show_obstacles
 
+
 TIC_TIMEOUT = 0.1
 POINTS_PER_PRESS = 1
 BORDER_WIDTH = 2
@@ -62,6 +63,10 @@ async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
                 current_x_limited + 2, -0.9
             )
             coroutines.append(fire_coro)
+        for obstacle in obstacles:
+            if obstacle.has_collision(current_y_limited, current_x_limited):
+                coroutines.append(show_gameover(canvas, canvas_height, canvas_width))          
+                return
         draw_frame(canvas, current_y_limited, current_x_limited, frame)
         await sleep()
         draw_frame(canvas, current_y_limited, current_x_limited, frame, negative=True)
@@ -84,6 +89,20 @@ async def fill_orbit_with_garbage(canvas, canvas_height, canvas_width):
         fly_garbage_coro = fly_garbage(canvas, garbage_column, garbage_list[garbage_frame_number])
         coroutines.append(fly_garbage_coro)
         await sleep(20)
+
+
+async def show_gameover(canvas, canvas_height, canvas_width):
+    with open('animation/game_over.txt') as f:
+        gameover = f.read()
+    frame_height, frame_width = get_frame_size(gameover)
+    while True:
+        draw_frame(
+            canvas,
+            (canvas_height - frame_height) / 2,
+            (canvas_width - frame_width) / 2,
+            gameover
+        )
+        await sleep()
 
 
 def draw(canvas):
