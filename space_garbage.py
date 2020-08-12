@@ -1,5 +1,9 @@
-from curses_tools import draw_frame
+from curses_tools import draw_frame, get_frame_size
 import asyncio
+from obstacles import Obstacle
+
+
+obstacles = []
 
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
@@ -9,9 +13,15 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     column = min(column, columns_number - 1)
 
     row = 0
-
-    while row < rows_number:
-        draw_frame(canvas, row, column, garbage_frame)
-        await asyncio.sleep(0)
-        draw_frame(canvas, row, column, garbage_frame, negative=True)
-        row += speed
+    frame_height, frame_width = get_frame_size(garbage_frame)
+    obstacle = Obstacle(row, column, frame_height, frame_width)
+    try:
+        obstacles.append(obstacle)
+        while row < rows_number:
+            obstacle.row = row
+            draw_frame(canvas, row, column, garbage_frame)
+            await asyncio.sleep(0)
+            draw_frame(canvas, row, column, garbage_frame, negative=True)
+            row += speed
+    finally:
+        obstacles.remove(obstacle)
