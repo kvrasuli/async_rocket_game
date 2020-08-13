@@ -8,7 +8,7 @@ from itertools import cycle
 from space_garbage import fly_garbage, obstacles
 from physics import update_speed
 from obstacles import show_obstacles
-
+from game_scenario import PHRASES, get_garbage_delay_tics
 
 TIC_TIMEOUT = 0.1
 POINTS_PER_PRESS = 1
@@ -16,7 +16,7 @@ BORDER_WIDTH = 2
 NUMBER_OF_STARS = 100
 
 coroutines = []
-
+current_year = 1956
 
 async def sleep(tics=1):
     for _ in range(tics):
@@ -39,6 +39,7 @@ async def blink(canvas, row, column, blink_offset_tics, symbol='*'):
 
 
 async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
+    global current_year
     row_speed = column_speed = 0
     with open('animation/rocket_frame_1.txt') as f:
         frame_1 = f.read()
@@ -57,7 +58,7 @@ async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
         current_x += (POINTS_PER_PRESS * columns_direction + column_speed)
         current_y_limited = max(BORDER_WIDTH, min(current_y, canvas_height - frame_height - BORDER_WIDTH))
         current_x_limited = max(BORDER_WIDTH, min(current_x, canvas_width - frame_width - BORDER_WIDTH))
-        if space:
+        if space and current_year >= 2020:
             fire_coro = fire(
                 canvas, current_y_limited,
                 current_x_limited + 2, -0.9
@@ -73,6 +74,7 @@ async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
 
 
 async def fill_orbit_with_garbage(canvas, canvas_height, canvas_width):
+    global current_year
     garbage_frames = [
         'duck.txt', 'hubble.txt',
         'lamp.txt', 'trash_large.txt',
@@ -86,9 +88,12 @@ async def fill_orbit_with_garbage(canvas, canvas_height, canvas_width):
     while True:
         garbage_frame_number = random.randint(0, len(garbage_list) - 1)
         garbage_column = random.randint(BORDER_WIDTH, canvas_width - BORDER_WIDTH - 1)
-        fly_garbage_coro = fly_garbage(canvas, garbage_column, garbage_list[garbage_frame_number])
-        coroutines.append(fly_garbage_coro)
-        await sleep(20)
+        garbage_delay = get_garbage_delay_tics(current_year)
+        if garbage_delay is not None:
+            fly_garbage_coro = fly_garbage(canvas, garbage_column, garbage_list[garbage_frame_number])
+            coroutines.append(fly_garbage_coro)
+            await sleep(garbage_delay)
+        await sleep()
 
 
 async def show_gameover(canvas, canvas_height, canvas_width):
@@ -105,6 +110,18 @@ async def show_gameover(canvas, canvas_height, canvas_width):
         await sleep()
 
 
+async def years_counter(canvas, canvas_height, canvas_width):
+    global current_year
+    while True:
+        phrase = PHRASES[current_year] if current_year in PHRASES.keys() else ''
+        current_label = f'{current_year} {phrase}'
+        subcanvas = canvas.derwin(canvas_height - BORDER_WIDTH , canvas_width - len(current_label) - BORDER_WIDTH)
+        current_year += 1
+        subcanvas.addstr(current_label)
+        await sleep(15)
+        subcanvas.clear()
+
+
 def draw(canvas):
     canvas.border()
     canvas.nodelay(True)
@@ -117,10 +134,11 @@ def draw(canvas):
         canvas_height,
         canvas_width,
     )
-    obstacles_index_coro = show_obstacles(canvas, obstacles)
+    years_counter_coro = years_counter(canvas, canvas_height, canvas_width)
     coroutines.append(spaceship_coro)
     coroutines.append(garbage_coro)
-    coroutines.append(obstacles_index_coro)
+    coroutines.append(years_counter_coro)
+
 
     for _ in range(NUMBER_OF_STARS):
         star_symbol = random.choice("+*.:")
