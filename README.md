@@ -14,4 +14,4 @@ python3 main.py
 - Press Space to shoot
 
 ## What it looks like
-![](https://gfycat.com/cleanthoughtfulbighornsheep)
+![](https://thumbs.gfycat.com/CleanThoughtfulBighornsheep.webp)
