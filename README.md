@@ -13,3 +13,5 @@ python3 main.py
 - Use keyboard arrows to control the rocket
 - Press Space to shoot
 
+## What it looks like
+![](https://gfycat.com/cleanthoughtfulbighornsheep)
