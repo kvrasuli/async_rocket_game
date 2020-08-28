@@ -64,7 +64,7 @@ async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
             )
             coroutines.append(fire_coro)
         for obstacle in obstacles:
-            if obstacle.has_collision(current_y_limited, current_x_limited):
+            if obstacle.has_collision(current_y_limited, current_x_limited, frame_height, frame_width):
                 coroutines.append(show_gameover(canvas, canvas_height, canvas_width))          
                 return
         draw_frame(canvas, current_y_limited, current_x_limited, frame)
