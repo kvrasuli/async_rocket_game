@@ -24,8 +24,7 @@ async def sleep(tics=1):
 
 
 async def blink(canvas, row, column, blink_offset_tics, symbol='*'):
-    for _ in range(blink_offset_tics):
-        await sleep()
+    await sleep(blink_offset_tics)
 
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
