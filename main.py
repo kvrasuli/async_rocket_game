@@ -54,8 +54,8 @@ async def animate_spaceship(canvas, row, column, canvas_height, canvas_width):
             row_speed, column_speed,
             rows_direction, columns_direction
         )
-        current_y += (POINTS_PER_PRESS * rows_direction + row_speed)
-        current_x += (POINTS_PER_PRESS * columns_direction + column_speed)
+        current_y += POINTS_PER_PRESS * rows_direction + row_speed
+        current_x += POINTS_PER_PRESS * columns_direction + column_speed
         current_y_limited = max(BORDER_WIDTH, min(current_y, canvas_height - frame_height - BORDER_WIDTH))
         current_x_limited = max(BORDER_WIDTH, min(current_x, canvas_width - frame_width - BORDER_WIDTH))
         if space and current_year >= 2020:
