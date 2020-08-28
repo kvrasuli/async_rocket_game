@@ -89,7 +89,7 @@ async def fill_orbit_with_garbage(canvas, canvas_height, canvas_width):
         garbage_frame_number = random.randint(0, len(garbage_list) - 1)
         garbage_column = random.randint(BORDER_WIDTH, canvas_width - BORDER_WIDTH - 1)
         garbage_delay = get_garbage_delay_tics(current_year)
-        if garbage_delay is not None:
+        if garbage_delay:
             fly_garbage_coro = fly_garbage(canvas, garbage_column, garbage_list[garbage_frame_number])
             coroutines.append(fly_garbage_coro)
             await sleep(garbage_delay)
