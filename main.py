@@ -112,7 +112,7 @@ async def show_gameover(canvas, canvas_height, canvas_width):
 async def count_years(canvas, canvas_height, canvas_width):
     global current_year
     while True:
-        phrase = PHRASES[current_year] if current_year in PHRASES.keys() else ''
+        phrase = PHRASES.get(current_year, '')
         current_label = f'{current_year} {phrase}'
         subcanvas = canvas.derwin(canvas_height - BORDER_WIDTH , canvas_width - len(current_label) - BORDER_WIDTH)
         current_year += 1
