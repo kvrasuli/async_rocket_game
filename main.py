@@ -110,7 +110,7 @@ async def show_gameover(canvas, canvas_height, canvas_width):
         await sleep()
 
 
-async def years_counter(canvas, canvas_height, canvas_width):
+async def count_years(canvas, canvas_height, canvas_width):
     global current_year
     while True:
         phrase = PHRASES[current_year] if current_year in PHRASES.keys() else ''
@@ -134,10 +134,10 @@ def draw(canvas):
         canvas_height,
         canvas_width,
     )
-    years_counter_coro = years_counter(canvas, canvas_height, canvas_width)
+    count_years_coro = count_years(canvas, canvas_height, canvas_width)
     coroutines.append(spaceship_coro)
     coroutines.append(garbage_coro)
-    coroutines.append(years_counter_coro)
+    coroutines.append(count_years_coro)
 
 
     for _ in range(NUMBER_OF_STARS):
